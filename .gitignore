@@ -3,3 +3,12 @@
 ################################################################################
 
 /ScoreBoard/ScoreBoard/Debug/ScoreBoard.tlog
+*.log
+*.ipch
+*.suo
+/.vs/VSWorkspaceState.json
+/.vs/ProjectSettings.json
+/ScoreBoard/.vs/ScoreBoard/v15/Browse.VC.opendb
+/ScoreBoard/.vs/ScoreBoard/v15/Browse.VC.db
+*.user
+/.vs/slnx.sqlite
