@@ -12,3 +12,5 @@
 /ScoreBoard/.vs/ScoreBoard/v15/Browse.VC.db
 *.user
 /.vs/slnx.sqlite
+*.idb
+/ScoreBoard/ScoreBoard/Debug/vc141.pdb
