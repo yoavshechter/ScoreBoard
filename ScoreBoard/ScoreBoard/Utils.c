@@ -1,5 +1,27 @@
 #include "Utils.h"
 
+
+int verifyFiles(FILE** filesFd, char ** filesPaths) {
+	for (int i = 0; i < NUM_OF_FILES; i++) {
+		FILE* fd;
+		if (i > 2) {
+			fd = fopen(filesPaths[i], "r");
+		}
+		else {
+			fd = fopen(filesPaths[i], "w");
+		}
+		if (!fd) {
+			printf("Error! coulsnt open %s/.txt file.\n", filesNames[i]);
+			for (int j = 0; j < i; j++) {
+				fclose(filesFd[j]);
+			}
+			return 0;
+		}
+		filesFd[i] = fd;
+	}
+	return 1;
+}
+
 void printMemoutFile(FILE* fd, int* memory, int maxLines) {
 	for (int i = 0; i < maxLines; i++) {
 		fprintf(fd, "%d.%.8x\n", i, memory[i]);

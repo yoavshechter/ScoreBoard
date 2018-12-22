@@ -1,8 +1,12 @@
 #pragma once
+#define _CRT_SECURE_NO_DEPRECATE
 #include <stdio.h>
 #include <string.h>
 #include "Commons.h"
 
+extern char* filesNames[NUM_OF_FILES];
+
+int verifyFiles(FILE** filesFd, char ** filesPaths);
 
 void printMemoutFile(FILE* fd, int* memory, int maxLines);
 
