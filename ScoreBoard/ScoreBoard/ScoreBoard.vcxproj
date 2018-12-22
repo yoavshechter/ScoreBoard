@@ -19,12 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Commands.c" />
+    <ClCompile Include="Config.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="Simulator.c" />
     <ClCompile Include="Utils.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Commands.h" />
     <ClInclude Include="Commons.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="Simulator.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>

@@ -1,7 +1,10 @@
 #pragma once
-#define MAX_REGISTERS 16
+
+#define MEMORY_LENGTH 4096
+#define NUM_OF_REGISTERS 16
 #define NUM_OF_CYCLES_TYPES 4
 #define NUM_OF_FILES 6
+#define NUM_OF_UNITS 6
 
 typedef enum {
 	CONFIG = 0,
@@ -10,14 +13,19 @@ typedef enum {
 	REGOUT,
 	TRACEINST,
 	TRACEUNIT,
-}files;
+}file;
 
+typedef enum {
+	LD = 0,
+	ST,
+	ADD,
+	SUB,
+	MULT,
+	DIV,
+	HALT,
+}opcode;
 
 static char* filesNames[NUM_OF_FILES] = { "cfg", "memin", "memout", "regout", "traceinst", "traceunit" };
-
-typedef struct opcodeCommand {
-	char* cmdName;
-}Command;
 
 typedef struct fetchUnit {
 	char* unitName;
