@@ -15,24 +15,23 @@ Config* createConfig() {
 	return cfg;
 }
 
-void cleanConfig(Config* cfg) {
+void freeConfig(Config* cfg) {
 	if (!cfg) {
 		return;
 	}
 	free(cfg);
 }
 
-Config* parseConfig(FILE* cfgFd) {
+Config* parseConfig(FILE* cfgFd, char* line) {
 	Config* cfg = createConfig();
 	if (!cfg) {
 		return 0;
 	}
-	char* line = 0;
 	size_t len = 0;
 	ssize_t readLines = 0;
 	int linesCounter = 0;
 	
-	while ((readLines = getline(&line, &len, cfgFd)) != -1) {
+	while (fgets(line, MAX_LINE_LENGTH, cfgFd) != 0) {
 		if (!parse(cfg, line)) {
 			printf("Parser failed.\n");
 			return 0;
@@ -56,7 +55,7 @@ int parse(Config* cfg, char* line) {
 		}
 	}
 	for (int i = 0; i < NUM_OF_UNITS; i++) {
-		if (strcmp(ptr, configUnitsTypes[i + NUM_OF_UNITS]) == 0) {
+		if (strcmp(ptr, configUnitsTypes[i+NUM_OF_UNITS]) == 0) {
 			if ((param = parseParam(ptr, i, delimeter)) == -1) {
 				return 0;
 			}

@@ -8,7 +8,7 @@ Command* createCmd() {
 	return cmd;
 }
 
-void cleanCmd(Command* cmd) {
+void freeCmd(Command* cmd) {
 	if (!cmd) {
 		return;
 	}

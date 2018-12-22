@@ -36,8 +36,7 @@ void printMemoutFile(FILE* fd, int* memory, int maxLines) {
 void printRegoutFile(FILE* fd, int* regs) {
 	int i;
 	for (i = 0; i < NUM_OF_REGISTERS; i++) {
-		fprintf(fd, "%d/.", i);
-		fprintf(fd, "%.8x", regs[i]);
+		fprintf(fd, "%f", regs[i]);
 	}
 }
 

@@ -31,9 +31,9 @@ static char* configUnitsTypes[13] = { "add_nr_units", "sub_nr_units", "mul_nr_un
 
 Config* createConfig();
 
-void cleanConfig(Config* cfg);
+void freeConfig(Config* cfg);
 
-Config* parseConfig(FILE* cfgFd);
+Config* parseConfig(FILE* cfgFd, char* line);
 
 int parse(Config* cfg, char* line);
 

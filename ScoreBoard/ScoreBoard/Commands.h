@@ -13,6 +13,6 @@ typedef struct opcodeCommand {
 
 Command* createCmd();
 
-void cleanCmd(Command* cmd);
+void freeCmd(Command* cmd);
 
 Command* parseCmd(Command* cmd, int cmdLine);
