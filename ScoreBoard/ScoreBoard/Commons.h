@@ -5,6 +5,7 @@
 #define NUM_OF_CYCLES_TYPES 4
 #define NUM_OF_FILES 6
 #define NUM_OF_UNITS 6
+#define MAX_LENGTH 10
 
 typedef enum {
 	CONFIG = 0,

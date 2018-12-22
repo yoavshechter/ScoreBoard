@@ -2,10 +2,9 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #include <stdio.h>
 #include <string.h>
-#include "Commons.h"
 #include "Commands.h"
+#include "Config.h"
 
-typedef intptr_t ssize_t;
 
 extern char* filesNames[NUM_OF_FILES];
 
@@ -22,5 +21,3 @@ void printTracinstFile(FILE* fd, Command* cmd, int pc, Unit* unit, int* cycles);
 void printTraceunitFile(FILE* fd, int cycle, Unit* unit, int* regsIndices, Unit** qUnits, int* r);
 
 int cmdToHex(Command* cmd);
-
-ssize_t getline(char **lineptr, size_t *n, FILE *stream);

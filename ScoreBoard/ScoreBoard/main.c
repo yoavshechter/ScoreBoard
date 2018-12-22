@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "Simulator.h"
-#include "Commons.h"
 
 int main(int argc, char **argv) {
 	if (argc != NUM_OF_FILES + 1) {

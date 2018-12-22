@@ -1,12 +1,13 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
 #include "Commons.h"
-#include "Utils.h"
+
+typedef intptr_t ssize_t;
 
 typedef struct configParams {
 	int units[6];
 	int delays[6];
-	char* name;
+	char name[MAX_LENGTH];
 }Config;
 
 enum units{
@@ -25,7 +26,7 @@ enum units{
 	TRACE_UNIT,
 }configUnits;
 
-char* configUnitsTypes[13] = { "add_nr_units", "sub_nr_units", "mul_nr_units", "div_nr_units", "ld_nr_units", "st_nr_units",
+static char* configUnitsTypes[13] = { "add_nr_units", "sub_nr_units", "mul_nr_units", "div_nr_units", "ld_nr_units", "st_nr_units",
 "add_delay" , "sub_delay", "mul_delay", "div_delay", "ld_delay", "st_delay", "trace_unit" };
 
 Config* createConfig();
@@ -39,3 +40,5 @@ int parse(Config* cfg, char* line);
 int parseParam(char* ptr, int paramType, char* delimeter);
 
 int parseTraceUnitParam(char* ptr, int paramType, char* delimeter, char* unitTraceName);
+
+ssize_t getline(char **lineptr, size_t *n, FILE *stream);

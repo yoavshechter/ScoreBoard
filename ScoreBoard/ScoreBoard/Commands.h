@@ -1,4 +1,7 @@
 #pragma once
+#include <stdlib.h>
+#include "Commons.h"
+
 typedef struct opcodeCommand {
 	char* cmdName;
 	unsigned int opcode;

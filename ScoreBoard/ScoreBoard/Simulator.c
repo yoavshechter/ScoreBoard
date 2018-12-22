@@ -10,6 +10,7 @@ int simulator(char** filesPaths) {
 	int memory[MEMORY_LENGTH] = { 0 };
 	double regs[NUM_OF_REGISTERS] = { 0 };
 	initializeRegs(regs);
+	Config* cfg = parseConfig(filesFd[CONFIG]);
 	return 0;
 }
 
