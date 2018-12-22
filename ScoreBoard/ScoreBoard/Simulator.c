@@ -30,6 +30,7 @@ int simulator(char** filesPaths) {
 		printf("Error! failed to create config obg from cfg.txt.\n");
 		freeSolution(filesFd, line, cfg, 0);
 	}
+	/**/
 	return 0;
 }
 
@@ -61,39 +62,4 @@ void freeSolution(FILE** fds, char* line, Config* cfg, Command* cmd) {
 	if (line) { free(line); }
 	freeCmd(cmd);
 	freeConfig(cfg);
-}
-
-FunctionalUnit*  createFunctionalUnit() {
-	FunctionalUnit* fu = (FunctionalUnit*)malloc(sizeof(FunctionalUnit));
-	if (!fu) {
-		return 0;
-	}
-	return fu;
-}
-
-void freeFunctionalUnit(FunctionalUnit* fu) {
-	if (!fu) {
-		return;
-	}
-	free(fu);
-}
-
-FunctionalUnits*  createFunctionalUnits() {
-	FunctionalUnits* fus = (FunctionalUnits*)malloc(sizeof(FunctionalUnits));
-	if (!fus) {
-		return 0;
-	}
-	for (int i = 0; i < NUM_OF_FUNCTIONAL_UNITS; i++) {
-		fus->fu[i] = createFunctionalUnit();
-	}
-	return fus;
-}
-
-void freeFunctionalUnits(FunctionalUnits* fus) {
-	if (!fus) {
-		return;
-	}
-	for (int i = 0; i < NUM_OF_FUNCTIONAL_UNITS; i++) {
-		freeFunctionalUnit(fus->fu[i]);
-	}
 }

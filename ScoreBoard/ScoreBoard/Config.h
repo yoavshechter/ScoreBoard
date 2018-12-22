@@ -40,5 +40,3 @@ int parse(Config* cfg, char* line);
 int parseParam(char* ptr, int paramType, char* delimeter);
 
 int parseTraceUnitParam(char* ptr, int paramType, char* delimeter, char* unitTraceName);
-
-ssize_t getline(char **lineptr, size_t *n, FILE *stream);
