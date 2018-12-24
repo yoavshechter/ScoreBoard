@@ -33,7 +33,7 @@ void printMemoutFile(FILE* fd, int* memory, int maxLines) {
 	}
 }
 
-void printRegoutFile(FILE* fd, int* regs) {
+void printRegoutFile(FILE* fd, double* regs) {
 	int i;
 	for (i = 0; i < NUM_OF_REGISTERS; i++) {
 		fprintf(fd, "%f", regs[i]);
@@ -44,7 +44,7 @@ void printTracinstFile(FILE* fd, Command* cmd, int pc, Unit* unit, int* cycles) 
 	int i = 0;
 	fprintf(fd, "%.8x ", cmdToHex(cmd));
 	fprintf(fd, "%d ", pc);
-	fprintf(fd, "%s ", unit->unitName);
+	fprintf(fd, "%s ", unitsTypeNames[unit->name]);
 	for (i = 0; i < NUM_OF_CYCLES_TYPES - 1; i++) {
 		fprintf(fd, "%d ", cycles[i]);
 	}
@@ -54,13 +54,13 @@ void printTracinstFile(FILE* fd, Command* cmd, int pc, Unit* unit, int* cycles) 
 void printTraceunitFile(FILE* fd, int cycle, Unit* unit, int* regsIndices, Unit** qUnits, int* r) {
 	int i = 0;
 	fprintf(fd, "%d ", cycle);
-	fprintf(fd, "%s ", unit->unitName);
+	fprintf(fd, "%s ", unitsTypeNames[unit->name]);
 	for (i = 0; i < 3; i++) {
 		fprintf(fd, "F%d ", regsIndices[i]);
 	}
 	for (i = 0; i < 2; i++) {
 		if (!qUnits[i]) {
-			fprintf(fd, "%s ", qUnits[i]->unitName);
+			fprintf(fd, "%s ", unitsTypeNames[qUnits[i]->name]);
 		}
 		else {
 			fprintf(fd, "- ");

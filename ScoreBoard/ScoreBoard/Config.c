@@ -8,17 +8,23 @@
 #include "Config.h"
 
 Config* createConfig() {
-	Config* cfg = (Config*)malloc(sizeof(Config));
-	if (!cfg) {
+	Config* src = (Config*)malloc(sizeof(Config));
+	if (!src) {
 		return 0;
 	}
-	return cfg;
+	char* name = (char*)malloc(sizeof(char));
+	if (!name) {
+		return 0;
+	}
+	src->unitName = name;
+	return src;
 }
 
 void freeConfig(Config* cfg) {
 	if (!cfg) {
 		return;
 	}
+	free(cfg->unitName);
 	free(cfg);
 }
 
@@ -68,7 +74,10 @@ int parse(Config* cfg, char* line) {
 			return 0;
 		}
 		if (unitTraceName) {
-			strcpy(cfg->name, unitTraceName);
+			char* del = "01234";
+			cfg->unitNum = extractDigitFromStr(unitTraceName);
+			char* ptr = strtok(unitTraceName, del);
+			strcpy(cfg->unitName, ptr);
 		}
 	}
 	return 1;
@@ -88,4 +97,18 @@ int parseTraceUnitParam(char* ptr, int paramType, char* delimeter, char* unitTra
 	}
 	strcpy(unitTraceName, ptr);
 	return 1;
+}
+
+int extractDigitFromStr(char* str) {
+	char* ptr = str;
+	while (*ptr) {
+		if (isdigit(*ptr)) {
+			int res = atoi(ptr);
+			return res;
+		}
+		else {
+			ptr++;
+		}
+	}
+	return -1;
 }
