@@ -12,13 +12,13 @@ int initializeMemory(FILE* meminFd, char* line, int* memory);
 /*Initialize registers.*/
 void initializeRegs(double* regs);
 
-void issue();
+int issue(IntructionQueue* queue, FunctionalUnit* fu, int cmdIndex, int cc, int* regsStatus);
 
-void readOperand();
+void readOperand(FunctionalUnit* fu, int cc);
 
 void execution();
 
 void writeResult();
 
 /*Free all the data that has been allocated for exit solution properly.*/
-void freeSolution(FILE** fds, char* line, Config* cfg, Command* cmd, FunctionalUnit* fus, IntructionQueue* queue);
+void freeSolution(FILE** fds, char* line, Config* cfg, Instruction* cmd, FunctionalUnit* fus, IntructionQueue* queue);

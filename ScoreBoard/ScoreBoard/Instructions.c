@@ -1,34 +1,40 @@
-#include "Commands.h"
+#include "Instructions.h"
 
-Command* createCmd() {
-	Command* cmd = (Command*)malloc(sizeof(Command));
-	if (!cmd) {
+Instruction* createInstruction() {
+	Instruction* src = (Instruction*)malloc(sizeof(Instruction));
+	if (!src) {
 		return 0;
 	}
-	cmd->isEmpty = Yes;
-	return cmd;
+	src->isEmpty = Yes;
+	for (int i = 0; i < NUM_OF_CYCLES_TYPES; i++) {
+		src->stateCC[i] = -1;
+	}
+	return src;
 }
 
-void freeCmd(Command* cmd) {
-	if (!cmd) {
+void freeInstruction(Instruction* src) {
+	if (!src) {
 		return;
 	}
-	free(cmd);
+	free(src);
 }
 
-void parseCmd(Command* cmd, int cmdLine) {
+void parseInstruction(Instruction* src, int cmdLine) {
 	unsigned int temp = cmdLine;
 	temp <<= 4;
-	cmd->opcode = 0xFFFFFFF & (temp >> 28);
+	src->opcode = 0xFFFFFFF & (temp >> 28);
 	temp <<= 4;
-	cmd->regDst = 0xFFFFFFF & (temp >> 28);
+	src->regDst = 0xFFFFFFF & (temp >> 28);
 	temp <<= 4;
-	cmd->regSrc0 = 0xFFFFFFF & (temp >> 28);
+	src->regSrc0 = 0xFFFFFFF & (temp >> 28);
 	temp <<= 4;
-	cmd->regSrc1 = 0xFFFFFFF & (temp >> 28);
+	src->regSrc1 = 0xFFFFFFF & (temp >> 28);
 	temp <<= 4;
-	cmd->immidiate = 0xFFFFF & (temp >> 20);
-	cmd->isEmpty = No;
+	src->immidiate = 0xFFFFF & (temp >> 20);
+	src->isEmpty = No;
+	if (src->opcode != OP_HALT) {
+		src->instType = src->opcode;
+	}
 }
 
 IntructionQueue* createInstructionQueue() {
@@ -37,7 +43,7 @@ IntructionQueue* createInstructionQueue() {
 		return 0;
 	}
 	for (int i = 0; i < NUM_OF_INSTRUCTION_IN_QUEUE; i++) {
-		instQueue->queue[i] = createCmd();
+		instQueue->queue[i] = createInstruction();
 	}
 	instQueue->isQueueFull = No;
 	instQueue->isQueueEmpty = Yes;
@@ -49,33 +55,34 @@ void freeInstructionQueue(IntructionQueue* instQueue) {
 		return;
 	}
 	for (int i = 0; i < NUM_OF_INSTRUCTION_IN_QUEUE; i++) {
-		freeCmd(instQueue->queue[i]);
+		freeInstruction(instQueue->queue[i]);
 	}
 }
 
-int addCmdToIntructionQueue(IntructionQueue* instQueue, Command* cmd) {
+int addInstructionToInstructionQueue(IntructionQueue* instQueue, Instruction* instruction) {
 	if (instQueue->isQueueFull) {
 		printf("Instructions Queue is full, cant insert more commands.\n");
-		return 0;
+		return -1;
 	}
 	for (int i = 0; i < NUM_OF_INSTRUCTION_IN_QUEUE; i++) {
 		if (instQueue->queue[i]->isEmpty) {
-			freeCmd(instQueue->queue[i]);
+			freeInstruction(instQueue->queue[i]);
 			printf("Insert cmd to queue at position %d.\n", i);
-			instQueue->queue[i] = cmd;
-			break;
+			instQueue->queue[i] = instruction;
+			instruction->queueIndex = i;
+			checkIfQueueIsFullOrEmpty(instQueue);
+			return i;
 		}
 	}
-	checkIfQueueIsFullOrEmpty(instQueue);
-	return 1;
+	return -1;
 }
 
-int removeCmdToIntructionQueue(IntructionQueue* instQueue, int cmdIndex) {
+int removeInstructionToInstructionQueue(IntructionQueue* instQueue, int instIndex) {
 	if (instQueue->isQueueEmpty) {
 		printf("Instructions Queue is empty, cant remove commands.\n");
 		return 0;
 	}
-	instQueue->queue[cmdIndex] = 0;
+	instQueue->queue[instIndex] = 0;
 	checkIfQueueIsFullOrEmpty(instQueue);
 	return 1;
 }

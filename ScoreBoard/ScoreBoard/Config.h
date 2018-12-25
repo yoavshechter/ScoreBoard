@@ -29,8 +29,6 @@ typedef enum unitsEnum{
 	TRACE_UNIT,
 }configUnits;
 
-static char* configUnitsTypes[13] = { "add_nr_units", "sub_nr_units", "mul_nr_units", "div_nr_units", "ld_nr_units", "st_nr_units",
-"add_delay" , "sub_delay", "mul_delay", "div_delay", "ld_delay", "st_delay", "trace_unit" };
 
 /*Create config object.*/
 Config* createConfig();

@@ -2,30 +2,39 @@
 #include <stdlib.h>
 #include "Commons.h"
 #include "Config.h"
+#include "Instructions.h"
 
-typedef enum {
-	UNIT_ADD = 0,
-	UNIT_SUB, 
-	UNIT_MULT,
-	UNIT_DIV,
-	UNIT_LD,
-	UNIT_ST,
-}UnitType;
 
 typedef struct unit {
-	UnitType name;
+	Instruction* instruction;
+	UnitType type;
 	int unitNum;
 	int busy;
 	opcode op;
-	double f[3];
-	struct Unit* q[2];
-	int r[2];
+
+	int f_i;
+	int f_j;
+	int f_k;
+
+	struct Unit* q_j;
+	int q_j_type;
+	int q_k_type;
+	int q_j_index;
+	int q_k_index;
+	struct Unit* q_k;
+
+	int r_j;
+	int r_k;
+	int isEmpty;
 }Unit;
 
 typedef struct units {
 	Unit* units[MAX_NUM_OF_FUNCTIONAL_UNITS];
-	int numOfUnits;
+	UnitType type;
+	int numOfTotalUnits;
+	int numOfActiveUnits;
 	int delay;
+	int canInsert;
 }Units;
 
 typedef struct functionalUnit {
@@ -35,17 +44,14 @@ typedef struct functionalUnit {
 }FunctionalUnit;
 
 
-static char* unitsTypeNames[6] = { "ADD", "SUB", "MULT", "DIV", "LD", "ST" };
-
-
 /*Create unit object.*/
-Unit*  createUnit();
+Unit*  createUnit(UnitType type, int num);
 
 /*Free unit object.*/
 void freeUnit(Unit* src);
 
 /*Create units object.*/
-Units*  createUnits(int numOfUnits, int delay);
+Units* createUnits(int numOfUnits, int delay, UnitType type);
 
 /*Free units object.*/
 void freeUnits(Units* src);

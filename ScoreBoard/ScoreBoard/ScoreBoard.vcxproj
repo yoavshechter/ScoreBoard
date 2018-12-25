@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Commands.c" />
+    <ClCompile Include="Instructions.c" />
     <ClCompile Include="Config.c" />
     <ClCompile Include="FunctionalUnit.c" />
     <ClCompile Include="main.c" />
@@ -27,7 +27,7 @@
     <ClCompile Include="Utils.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Commands.h" />
+    <ClInclude Include="Instructions.h" />
     <ClInclude Include="Commons.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="FunctionalUnit.h" />
