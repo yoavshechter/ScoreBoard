@@ -22,11 +22,6 @@ int verifyFiles(FILE** filesFd, char ** filesPaths) {
 	return 1;
 }
 
-double decToSinglePrecision(int dec) {
-	//TODO
-	return 1.0;
-}
-
 void printMemoutFile(FILE* fd, int* memory, int maxLines) {
 	for (int i = 0; i < maxLines; i++) {
 		fprintf(fd, "%d.%.8x\n", i, memory[i]);
@@ -80,44 +75,59 @@ int cmdToHex(Instruction* instruction) {
 	return hex;
 }
 
-int issueInstructionToUnit(FunctionalUnit* fus, Instruction* instruction, int* regsStatus, int cc) {
-	if (instruction->isEmpty) {
-		printf("Trying to attach empty instruction to unit.\n");
-		return -1;
+float singlePrecisionToFloat(unsigned long sp) {
+	unsigned long sign, exp, fra_bits, fra_b;
+	int i = 0;
+	float res, fra = 1.0;
+	if (sp == 0) {
+		return 0.0;
 	}
-	int type = instruction->instType;
-	if (fus->fu[type]->canInsert) {
-		for (int i = 0; i < fus->fu[type]->numOfTotalUnits; i++) {
-			if (fus->fu[type]->units[i]->isEmpty) {
-				fus->fu[type]->units[i]->instruction = instruction;
-				fus->fu[type]->units[i]->busy = Yes;
-				fus->fu[type]->units[i]->f_i = instruction->regDst;
-				fus->fu[type]->units[i]->f_j = instruction->regSrc0;
-				fus->fu[type]->units[i]->f_k = instruction->regSrc1;
+	sign = sp >> 31;
+	exp = sp << 1 >> 24;
+	fra_bits = sp << 9 >> 9;
+	for (i = 0; i < 23; i++) {
+		fra_b = fra_bits << (i + 9);
+		fra_b = fra_b >> 31;
+		fra += fra_b * powf(2, -1 * (i + 1));
+	}
+	res = powf(-1, sign) * powf(2, exp - 127) * fra;
 
-				fus->fu[type]->units[i]->r_j = (regsStatus[instruction->regSrc0] == -1) ? Yes : No;
-				fus->fu[type]->units[i]->r_k = (regsStatus[instruction->regSrc1] == -1) ? Yes : No;
+	return res;
+}
 
-				fus->fu[type]->units[i]->q_j_type = (regsStatus[instruction->regSrc0]);
-				fus->fu[type]->units[i]->q_k_type = (regsStatus[instruction->regSrc0]);
-				fus->fu[type]->units[i]->q_j_index = (regsStatus[instruction->regSrc1]);
-				fus->fu[type]->units[i]->q_k_index = (regsStatus[instruction->regSrc1]);
-
-				fus->fu[type]->numOfActiveUnits++;
-				if (fus->fu[type]->numOfActiveUnits == fus->fu[type]->numOfTotalUnits) {
-					fus->fu[type]->canInsert = No;
-				}
-				fus->fu[type]->units[i]->isEmpty = No;
-				
-				
-				fus->fu[type]->units[i]->instruction->stateCC[ISSUE] = cc;
-							   				
-				regsStatus[instruction->regDst] = fus->fu[type]->units[i]->type;
-
-				return i;
-			}
+int floatToSinglePrecision(float f) {
+	int sign, exp, fra, exp_bit_len, i = 0, fra_to_bit = 0;
+	int integer = (int)floor(f);
+	int res;
+	float rat = f - integer;
+	sign = f > 0.0 ? 0 : 1;
+	exp_bit_len = floor(log2(integer));
+	exp = exp_bit_len + 127;
+	fra = integer << (23 - exp_bit_len);
+	for (i = 0; i < (23 - exp_bit_len); i++) {
+		rat = rat * 2;
+		if (1 > rat) {
+			fra_to_bit <<= 1;
+			printf("0");
+		}
+		else {
+			fra_to_bit += 1;
+			fra_to_bit <<= 1;
+			rat -= 1;
+			printf("1");
 		}
 	}
-	printf("Cant attach instruction to unit.\n");
-	return -1;
+	fra_to_bit >>= 1;
+	fra = fra | fra_to_bit;
+	fra = fra & 0x7FFFFF;
+	res = (((sign << 8) + exp) << 23) + fra;
+
+	return res;
+}
+
+int isUnitsEqual(Unit* src1, Unit* src2) {
+	if (src1->type == src2->type && src1->unitNum == src2->unitNum) {
+		return 1;
+	}
+	return 0;
 }

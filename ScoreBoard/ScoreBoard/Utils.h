@@ -2,13 +2,11 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include "FunctionalUnit.h"
 
 /*Check Verification of files.*/
 int verifyFiles(FILE** filesFd, char ** filesPaths);
-
-/*Decimal to Single Precision.*/
-double decToSinglePrecision(int dec);
 
 /*Print memout.txt file.*/
 void printMemoutFile(FILE* fd, int* memory, int maxLines);
@@ -25,5 +23,8 @@ void printTraceunitFile(FILE* fd, int cycle, Unit* unit, int* regsIndices, Unit*
 /*Command to Hexadecimal value.*/
 int cmdToHex(Instruction* instruction);
 
-/*Attach instruction to correct unit in the functional units struct*/
-int issueInstructionToUnit(FunctionalUnit* fus, Instruction* instruction, int* regsStatus, int cc);
+float singlePrecisionToFloat(unsigned long sp);
+
+int floatToSinglePrecision(float f);
+
+int isUnitsEqual(Unit* src1, Unit* src2);

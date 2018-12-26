@@ -4,18 +4,20 @@
 #include "Commons.h"
 
 typedef struct instructionCommand {
-	int instType;
 	unsigned int opcode;
 	unsigned int regDst;
 	unsigned int regSrc0;
 	unsigned int regSrc1;
 	unsigned int immidiate;
+	
+	int instType;
+	int status;
 	int isEmpty;
-	InstructionStatus status;
 	int queueIndex;
 
 	int remainTime;
 	int stateCC[NUM_OF_CYCLES_TYPES];
+	double instRes;
 }Instruction;
 
 typedef struct instructionQueue {

@@ -7,30 +7,24 @@
 
 typedef struct unit {
 	Instruction* instruction;
-	UnitType type;
+	int type;
 	int unitNum;
-	int busy;
-	opcode op;
+	int isEmpty;
 
+	int busy;
+	int op;
 	int f_i;
 	int f_j;
 	int f_k;
-
 	struct Unit* q_j;
-	int q_j_type;
-	int q_k_type;
-	int q_j_index;
-	int q_k_index;
 	struct Unit* q_k;
-
 	int r_j;
 	int r_k;
-	int isEmpty;
 }Unit;
 
 typedef struct units {
-	Unit* units[MAX_NUM_OF_FUNCTIONAL_UNITS];
-	UnitType type;
+	Unit** units;
+	int type;
 	int numOfTotalUnits;
 	int numOfActiveUnits;
 	int delay;

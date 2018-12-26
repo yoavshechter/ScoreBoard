@@ -9,6 +9,11 @@ Instruction* createInstruction() {
 	for (int i = 0; i < NUM_OF_CYCLES_TYPES; i++) {
 		src->stateCC[i] = -1;
 	}
+	src->instRes = -1;
+	src->remainTime = -1;
+	src->queueIndex = -1;
+	src->instType = -1;
+	src->status = -1;
 	return src;
 }
 
@@ -35,15 +40,26 @@ void parseInstruction(Instruction* src, int cmdLine) {
 	if (src->opcode != OP_HALT) {
 		src->instType = src->opcode;
 	}
+	else {
+		src->instType = -1;
+	}
 }
 
 IntructionQueue* createInstructionQueue() {
 	IntructionQueue* instQueue = (IntructionQueue*)malloc(sizeof(IntructionQueue));
 	if (!instQueue) {
+		printf("Error! Failed to allocate memory for instructions queue.\n");
 		return 0;
 	}
 	for (int i = 0; i < NUM_OF_INSTRUCTION_IN_QUEUE; i++) {
 		instQueue->queue[i] = createInstruction();
+		if (!instQueue->queue[i]) {
+			printf("Error! Failed to allocate memory for instructions in queue.\n");
+			for (int j = i; j > -1; j--) {
+				freeInstruction(instQueue->queue[j]);
+			}
+			return 0;
+		}
 	}
 	instQueue->isQueueFull = No;
 	instQueue->isQueueEmpty = Yes;
@@ -82,7 +98,7 @@ int removeInstructionToInstructionQueue(IntructionQueue* instQueue, int instInde
 		printf("Instructions Queue is empty, cant remove commands.\n");
 		return 0;
 	}
-	instQueue->queue[instIndex] = 0;
+	instQueue->queue[instIndex] = createInstruction();
 	checkIfQueueIsFullOrEmpty(instQueue);
 	return 1;
 }

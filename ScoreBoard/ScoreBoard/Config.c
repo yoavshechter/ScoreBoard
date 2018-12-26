@@ -12,7 +12,7 @@ Config* createConfig() {
 	if (!src) {
 		return 0;
 	}
-	char* name = (char*)malloc(sizeof(char));
+	char* name = (char*)malloc(MAX_LINE_LENGTH * sizeof(char));
 	if (!name) {
 		return 0;
 	}
