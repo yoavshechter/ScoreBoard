@@ -6,14 +6,17 @@ Instruction* createInstruction() {
 		return 0;
 	}
 	src->isEmpty = Yes;
+	src->writeToFile = No;
 	for (int i = 0; i < NUM_OF_CYCLES_TYPES; i++) {
 		src->stateCC[i] = -1;
 	}
 	src->instRes = -1;
-	src->remainTime = -1;
+	src->executionTime = -1;
 	src->queueIndex = -1;
 	src->instType = -1;
+	src->instIndex = -1;
 	src->status = -1;
+	src->fetchedTime = 0;
 	return src;
 }
 
@@ -38,15 +41,21 @@ void parseInstruction(Instruction* src, int cmdLine) {
 	src->immidiate = 0xFFFFF & (temp >> 20);
 	src->isEmpty = No;
 	if (src->opcode != OP_HALT) {
-		src->instType = src->opcode;
+		if (src->opcode != OP_LD) {
+			src->instType = src->opcode;
+		}
+		else {
+			src->instType = src->opcode;
+		}
 	}
 	else {
 		src->instType = -1;
 	}
+	printf("Instruction parsed correct(op:%s, dst:F%d, src0:F%d, src1:F%d, imm:%d)\n", opcodeNames[src->opcode], src->regDst, src->regSrc0, src->regSrc1, src->immidiate);
 }
 
-IntructionQueue* createInstructionQueue() {
-	IntructionQueue* instQueue = (IntructionQueue*)malloc(sizeof(IntructionQueue));
+InstructionQueue* createInstructionQueue() {
+	InstructionQueue* instQueue = (InstructionQueue*)malloc(sizeof(InstructionQueue));
 	if (!instQueue) {
 		printf("Error! Failed to allocate memory for instructions queue.\n");
 		return 0;
@@ -66,7 +75,7 @@ IntructionQueue* createInstructionQueue() {
 	return instQueue;
 }
 
-void freeInstructionQueue(IntructionQueue* instQueue) {
+void freeInstructionQueue(InstructionQueue* instQueue) {
 	if (!instQueue) {
 		return;
 	}
@@ -75,14 +84,17 @@ void freeInstructionQueue(IntructionQueue* instQueue) {
 	}
 }
 
-int addInstructionToInstructionQueue(IntructionQueue* instQueue, Instruction* instruction) {
+int addInstructionToInstructionQueue(InstructionQueue* instQueue, Instruction* instruction) {
+	if (instruction->instType == -1) {
+		printf("Instructions is HALT, will not push to the queue.\n");
+		return -1;
+	}
 	if (instQueue->isQueueFull) {
 		printf("Instructions Queue is full, cant insert more commands.\n");
 		return -1;
 	}
 	for (int i = 0; i < NUM_OF_INSTRUCTION_IN_QUEUE; i++) {
 		if (instQueue->queue[i]->isEmpty) {
-			freeInstruction(instQueue->queue[i]);
 			printf("Insert cmd to queue at position %d.\n", i);
 			instQueue->queue[i] = instruction;
 			instruction->queueIndex = i;
@@ -93,7 +105,7 @@ int addInstructionToInstructionQueue(IntructionQueue* instQueue, Instruction* in
 	return -1;
 }
 
-int removeInstructionToInstructionQueue(IntructionQueue* instQueue, int instIndex) {
+int removeInstructionFromInstructionQueue(InstructionQueue* instQueue, int instIndex) {
 	if (instQueue->isQueueEmpty) {
 		printf("Instructions Queue is empty, cant remove commands.\n");
 		return 0;
@@ -103,7 +115,7 @@ int removeInstructionToInstructionQueue(IntructionQueue* instQueue, int instInde
 	return 1;
 }
 
-void checkIfQueueIsFullOrEmpty(IntructionQueue* instQueue) {
+void checkIfQueueIsFullOrEmpty(InstructionQueue* instQueue) {
 	int numOfInstruction = 0;
 	for (int i = 0; i < NUM_OF_INSTRUCTION_IN_QUEUE; i++) {
 		if (instQueue->queue[i]->isEmpty != 0) {

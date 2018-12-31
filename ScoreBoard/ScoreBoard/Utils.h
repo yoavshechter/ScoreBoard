@@ -15,16 +15,20 @@ void printMemoutFile(FILE* fd, int* memory, int maxLines);
 void printRegoutFile(FILE* fd, double* regs);
 
 /*Print traceinst.txt file.*/
-void printTracinstFile(FILE* fd, Instruction* instruction, int pc, Unit* unit, int* cycles);
+void printTracinstFile(FILE* fd, Instruction* instruction, int type, int num);
 
 /*Print traceunit.txt file.*/
-void printTraceunitFile(FILE* fd, int cycle, Unit* unit, int* regsIndices, Unit** qUnits, int* r);
+void printTraceunitFile(FILE* fd, FunctionalUnit* fus, int* resultTypes, int* resultIndexes, int cc);
 
 /*Command to Hexadecimal value.*/
 int cmdToHex(Instruction* instruction);
 
-float singlePrecisionToFloat(unsigned long sp);
+float singlePrecisionToFloat(unsigned long singlePrecision);
 
-int floatToSinglePrecision(float f);
+int floatToSinglePrecision(float fl);
 
-int isUnitsEqual(Unit* src1, Unit* src2);
+int isUnitsEqual(FunctionalUnit* fu, int q_type, int q_index, Unit* src2, int isJ);
+
+void printUnit(Unit* src);
+
+void cleanAndWriteToFiles(FILE* fd, FunctionalUnit* fus, InstructionQueue* queue);

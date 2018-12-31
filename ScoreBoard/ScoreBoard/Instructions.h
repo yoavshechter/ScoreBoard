@@ -11,11 +11,14 @@ typedef struct instructionCommand {
 	unsigned int immidiate;
 	
 	int instType;
+	int instIndex;
 	int status;
 	int isEmpty;
+	int fetchedTime;
 	int queueIndex;
+	int writeToFile;
 
-	int remainTime;
+	int executionTime;
 	int stateCC[NUM_OF_CYCLES_TYPES];
 	double instRes;
 }Instruction;
@@ -24,7 +27,7 @@ typedef struct instructionQueue {
 	Instruction* queue[NUM_OF_INSTRUCTION_IN_QUEUE];
 	int isQueueFull;
 	int isQueueEmpty;
-}IntructionQueue;
+}InstructionQueue;
 
 
 /*Create command object.*/
@@ -37,16 +40,16 @@ void freeInstruction(Instruction* src);
 void parseInstruction(Instruction* src, int cmdLine);
 
 /*Create instruction queue object.*/
-IntructionQueue* createInstructionQueue();
+InstructionQueue* createInstructionQueue();
 
 /*Free instruction queue object.*/
-void freeInstructionQueue(IntructionQueue* queue);
+void freeInstructionQueue(InstructionQueue* queue);
 
 /*Add cmd to instruction queue if queue isnt full.*/
-int addInstructionToInstructionQueue(IntructionQueue* instQueue, Instruction* inst);
+int addInstructionToInstructionQueue(InstructionQueue* instQueue, Instruction* inst);
 
 /*Remove cmd to instruction queue if queue isnt empty.*/
-int removeInstructionToInstructionQueue(IntructionQueue* instQueue, int instIndex);
+int removeInstructionFromInstructionQueue(InstructionQueue* instQueue, int instIndex);
 
 /*Check if instruction queue is full.*/
-void checkIfQueueIsFullOrEmpty(IntructionQueue* instQueue);
+void checkIfQueueIsFullOrEmpty(InstructionQueue* instQueue);

@@ -12,11 +12,7 @@ Config* createConfig() {
 	if (!src) {
 		return 0;
 	}
-	char* name = (char*)malloc(MAX_LINE_LENGTH * sizeof(char));
-	if (!name) {
-		return 0;
-	}
-	src->unitName = name;
+	src->name = -1;
 	return src;
 }
 
@@ -24,7 +20,6 @@ void freeConfig(Config* cfg) {
 	if (!cfg) {
 		return;
 	}
-	free(cfg->unitName);
 	free(cfg);
 }
 
@@ -47,8 +42,14 @@ Config* parseConfig(FILE* cfgFd, char* line) {
 }
 
 int parse(Config* cfg, char* line) {
-	char* delimeter = " =\n";
+	if (line == '\n') {
+		return 1;
+	}
+	char* delimeter = " =\n\t";
 	char* ptr = strtok(line, delimeter);
+	if (!ptr) {
+		return 1;
+	}
 	int param;
 	char unitTraceName[MAX_LENGTH];
 	for (int i = 0; i < NUM_OF_UNITS; i++) {
@@ -77,7 +78,12 @@ int parse(Config* cfg, char* line) {
 			char* del = "01234";
 			cfg->unitNum = extractDigitFromStr(unitTraceName);
 			char* ptr = strtok(unitTraceName, del);
-			strcpy(cfg->unitName, ptr);
+			int name = unitTraceNameToInt(unitTraceName);
+			if (name == -1) {
+				printf("Error! cfg trace_unit_name invalide.\n");
+				return 0;
+			}
+			cfg->name = name;
 		}
 	}
 	return 1;
@@ -108,6 +114,15 @@ int extractDigitFromStr(char* str) {
 		}
 		else {
 			ptr++;
+		}
+	}
+	return -1;
+}
+
+int unitTraceNameToInt(char* str) {
+	for (int i = 0; i < NUM_OF_UNITS; i++) {
+		if (strcmp(str, unitsTypeNames[i]) == 0) {
+			return i;
 		}
 	}
 	return -1;

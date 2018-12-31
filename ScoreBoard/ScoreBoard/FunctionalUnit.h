@@ -10,20 +10,27 @@ typedef struct unit {
 	int type;
 	int unitNum;
 	int isEmpty;
+	int canWriteResult;
 
 	int busy;
 	int op;
 	int f_i;
 	int f_j;
+	double f_j_value;
 	int f_k;
-	struct Unit* q_j;
-	struct Unit* q_k;
+	double f_k_value;
+
+	int q_j_type;
+	int q_k_type;
+	int q_j_index;
+	int q_k_index;
+
 	int r_j;
 	int r_k;
 }Unit;
 
 typedef struct units {
-	Unit** units;
+	Unit* units[NUM_OF_UNITS];
 	int type;
 	int numOfTotalUnits;
 	int numOfActiveUnits;
@@ -33,7 +40,7 @@ typedef struct units {
 
 typedef struct functionalUnit {
 	Units* fu[NUM_OF_UNITS];
-	char* unitName;
+	int unitName;
 	int unitNum;
 }FunctionalUnit;
 

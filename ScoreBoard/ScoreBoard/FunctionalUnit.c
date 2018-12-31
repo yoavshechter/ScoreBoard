@@ -13,12 +13,17 @@ Unit* createUnit(UnitType type, int num) {
 	src->type = type;
 	src->unitNum = num;
 	src->isEmpty = Yes;
+	src->canWriteResult = No;
 
 	src->busy = No;
 	src->op = -1;
 	src->f_i = -1;
 	src->f_j = -1;
 	src->f_k = -1;
+	src->q_j_type = -1;
+	src->q_k_type = -1;
+	src->q_j_index = -1;
+	src->q_k_index = -1;
 	src->r_j = -1;
 	src->r_k = -1;
 	return src;
@@ -43,8 +48,6 @@ Units* createUnits(int numOfUnits, int delay, UnitType type) {
 		printf("Error! Failed to allocate memory for unitsArray.\n");
 		return 0;
 	}
-
-	src->units = unitsArray;
 
 	for (int i = 0; i < numOfUnits; i++) {
 		Unit* unit = createUnit(type, i);
@@ -81,13 +84,6 @@ FunctionalUnit* createFunctionalUnit(Config* cfg) {
 		printf("Error! Failed to allocate memory for functional units struct.\n");
 		return 0;
 	}
-	char* name = (char*)malloc(MAX_LINE_LENGTH * sizeof(char));
-	if (!name) {
-		printf("Error! Failed to allocate memory for functional units struct.\n");
-		free(src);
-		return 0;
-	}
-	src->unitName = name;
 	for (int i = 0; i < NUM_OF_UNITS; i++) {
 		src->fu[i] = createUnits(cfg->units[i], cfg->delays[i], i);
 		if (!src->fu[i]) {
@@ -98,8 +94,8 @@ FunctionalUnit* createFunctionalUnit(Config* cfg) {
 			return 0;
 		}
 	}
-	strcpy(src->unitName, cfg->unitName);
 	src->unitNum = cfg->unitNum;
+	src->unitName = cfg->name;
 	return src;
 }
 
@@ -110,6 +106,5 @@ void freeFunctionalUnit(FunctionalUnit* fus) {
 	for (int i = 0; i < NUM_OF_UNITS; i++) {
 		freeUnits(fus->fu[i]);
 	}
-	free(fus->unitName);
 	free(fus);
 }

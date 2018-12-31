@@ -9,7 +9,7 @@ typedef intptr_t ssize_t;
 typedef struct configParams {
 	int units[6];
 	int delays[6];
-	char* unitName;
+	int name;
 	int unitNum;
 }Config;
 
@@ -50,3 +50,5 @@ int parseTraceUnitParam(char* ptr, int paramType, char* delimeter, char* unitTra
 
 /*Extract digit from string.*/
 int extractDigitFromStr(char* str);
+
+int unitTraceNameToInt(char* str);

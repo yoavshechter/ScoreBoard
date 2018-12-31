@@ -5,6 +5,8 @@
 #define NUM_OF_CYCLES_TYPES 4
 #define NUM_OF_FILES 6
 #define NUM_OF_UNITS 6
+#define NUM_OF_UNITS_FOR_FUNCTIONAL_UNITS 5
+#define NUM_OF_OPCODES 7
 #define MAX_NUM_OF_FUNCTIONAL_UNITS 5
 #define MAX_LENGTH 10
 #define MAX_LINE_LENGTH 100 // TODO - Need to decide correct paramter.
@@ -59,8 +61,12 @@ typedef enum {
 static char* filesNames[NUM_OF_FILES] = { "cfg", "memin", "memout", "regout", "traceinst", "traceunit" };
 
 
-static char* unitsTypeNames[NUM_OF_UNITS] = { "LD", "ST", "ADD", "SUB", "MULT", "DIV" };
+static char* unitsTypeNames[NUM_OF_UNITS] = { "LD", "ST", "ADD", "SUB", "MUL", "DIV" };
 
 
-static char* configUnitsTypes[2*NUM_OF_UNITS+1] = { "add_nr_units", "sub_nr_units", "mul_nr_units", "div_nr_units", "ld_nr_units", "st_nr_units",
-"add_delay" , "sub_delay", "mul_delay", "div_delay", "ld_delay", "st_delay", "trace_unit" };
+static char* opcodeNames[NUM_OF_OPCODES] = { "LD", "ST", "ADD", "SUB", "MUL", "DIV", "HALT" };
+
+
+
+static char* configUnitsTypes[2*NUM_OF_UNITS+1] = { "ld_nr_units", "st_nr_units", "add_nr_units", "sub_nr_units", "mul_nr_units", "div_nr_units",
+"ld_delay", "st_delay", "add_delay" , "sub_delay", "mul_delay", "div_delay", "trace_unit" };
