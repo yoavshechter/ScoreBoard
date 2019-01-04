@@ -35,18 +35,6 @@ void printRegoutFile(FILE* fd, double* regs) {
 	}
 }
 
-void printTracinstFile(FILE* fd, Instruction* instruction, int type, int num) {
-	fseek(fd, 0, SEEK_END);
-	int i = 0;
-	fprintf(fd, "%.8x ", cmdToHex(instruction));
-	fprintf(fd, "%d ", instruction->fetchedTime);
-	fprintf(fd, "%s%d", unitsTypeNames[type], num);
-	for (i = 0; i < NUM_OF_CYCLES_TYPES; i++) {
-		fprintf(fd, " %d", instruction->stateCC[i]);
-	}
-	fprintf(fd, "\n");
-}
-
 void printTraceunitFile(FILE* fd, FunctionalUnit* fus, int* resultTypes, int* resultIndexes, int cc) {
 	int unitBusy = No;
 	for (int i = 0; i < NUM_OF_REGISTERS; i++) {
@@ -195,12 +183,140 @@ void cleanAndWriteToFiles(FILE* fd, FunctionalUnit* fus, InstructionQueue* queue
 		if (!queue->queue[i]->isEmpty && queue->queue[i]->stateCC[WRITE_RESILT] > 0) {
 			//scanf("%d", &queue->queue[i]->fetchedTime);
 			int type = queue->queue[i]->instType, index = queue->queue[i]->instIndex;
-			printTracinstFile(fd, queue->queue[i], type, index);
-			freeUnit(fus->fu[type]->units[index]);
-			removeInstructionFromInstructionQueue(queue, i);
+			insertFirst(fus->fu[type]->units[index]);
+			//freeUnit(fus->fu[type]->units[index]);
+			//removeInstructionFromInstructionQueue(queue, i);
+			fus->fu[type]->units[index]->instruction->isEmpty = Yes;
 			fus->fu[type]->units[index] = createUnit(type, index);
 			fus->fu[type]->units[index]->isEmpty = Yes;
 			fus->fu[type]->numOfActiveUnits--;
 		}
 	}
+}
+
+void printUnitsToTraceInstFile(FILE* fd) {
+	sort();
+	int listLength = length();
+	for (int i = 0; i < listLength; i++) {
+		printTracinstFile(fd, head->op, head->unitType, head->unitIndex, head->fetchCC, head->issueCC, head->readCC, head->exeCC, head->writeCC);
+		deleteFirst();
+	}
+}
+
+void printTracinstFile(FILE* fd, unsigned int opLine, int type, int index, int fetch, int issue, int read, int exe, int write) {
+	fseek(fd, 0, SEEK_END);
+	int i = 0;
+	fprintf(fd, "%.8x ", opLine);
+	fprintf(fd, "%d ", fetch);
+	fprintf(fd, "%s%d", unitsTypeNames[type], index);
+	fprintf(fd, " %d", issue);
+	fprintf(fd, " %d", read);
+	fprintf(fd, " %d", exe);
+	fprintf(fd, " %d", write);
+	fprintf(fd, "\n");
+}
+
+PrintUnit* createEmptyPrintUnit() {
+	PrintUnit* src = (PrintUnit*)malloc(sizeof(PrintUnit));
+	if (!src) {
+		return;
+	}
+	src->op = -1;
+	src->unitType = -1;
+	src->unitIndex = -1;
+	src->fetchCC = -1;
+	src->issueCC = -1;
+	src->readCC = -1;
+	src->exeCC = -1;
+	src->writeCC = -1;
+	return src;
+}
+
+void insertFirst(Unit* unitSrc) {
+	//create a link
+	PrintUnit* src = (PrintUnit*)malloc(sizeof(PrintUnit));
+	if (!src) {
+		return;
+	}
+	src->op = unitSrc->instruction->line;
+	src->unitType = unitSrc->type;
+	src->unitIndex = unitSrc->unitNum;
+	src->fetchCC = unitSrc->instruction->fetchedTime;
+	src->issueCC = unitSrc->instruction->stateCC[ISSUE];
+	src->readCC = unitSrc->instruction->stateCC[READ_OPERAND];
+	src->exeCC = unitSrc->instruction->stateCC[EXECUTION];
+	src->writeCC = unitSrc->instruction->stateCC[WRITE_RESILT];
+
+	//point it to old first node
+	src->next = head;
+
+	//point first to new first node
+	head = src;
+}
+
+PrintUnit* deleteFirst() {
+
+	//save reference to first link
+	PrintUnit *tempLink = head;
+
+	//mark next to first link as first 
+	head = head->next;
+
+	//return the deleted link
+	return tempLink;
+}
+
+int isEmpty() {
+	return head == NULL;
+}
+
+int length() {
+	int length = 0;
+	PrintUnit *current;
+
+	for (current = head; current != NULL; current = current->next) {
+		length++;
+	}
+
+	return length;
+}
+
+void sort() {
+
+	int i, j, k, tempKey;
+	PrintUnit *current;
+	PrintUnit *next;
+	PrintUnit *temp = createEmptyPrintUnit();
+
+	int size = length();
+	k = size;
+
+	for (i = 0; i < size - 1; i++, k--) {
+		current = head;
+		next = head->next;
+
+		for (j = 1; j < k; j++) {
+
+			if (current->fetchCC > next->fetchCC) {
+				setData(current, temp);
+				setData(next, current);
+				setData(temp, next);
+			}
+
+			current = current->next;
+			next = next->next;
+		}
+	}
+}
+
+void setData(PrintUnit* unitSrc, PrintUnit* dst) {
+	dst->op = unitSrc->op;
+	dst->unitType = unitSrc->unitType;
+	dst->unitIndex = unitSrc->unitIndex;
+	dst->fetchCC = unitSrc->fetchCC;
+	dst->issueCC = unitSrc->issueCC;
+	dst->readCC = unitSrc->readCC;
+	dst->exeCC = unitSrc->exeCC;
+	dst->writeCC = unitSrc->writeCC;
+
 }

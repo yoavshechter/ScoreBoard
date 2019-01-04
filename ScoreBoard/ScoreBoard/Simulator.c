@@ -19,6 +19,8 @@ int simulator(char** filesPaths) {
 	int cc = -1;
 	int canRun = Yes;
 	int haltSet = No;
+	int tempNumOfWorkingInst = numOfWorkingUnits;
+	int canFetch = Yes;
 
 	int resultTypes[NUM_OF_REGISTERS];
 	int resultIndexes[NUM_OF_REGISTERS];
@@ -97,7 +99,15 @@ int simulator(char** filesPaths) {
 				continue;
 			}
 			printf("*****************************ISSUE*****************************\n");
-			numOfWorkingUnits += issue(functionalUnit, instQueue, resultTypes, resultIndexes, instQueueIndex, cc);
+			tempNumOfWorkingInst = issue(functionalUnit, instQueue, resultTypes, resultIndexes, instQueueIndex, cc);
+			if (tempNumOfWorkingInst == 0) {
+				removeInstructionFromInstructionQueue(instQueue, instQueueIndex);
+				instNum--;
+				instruction->fetchedTime = -1;
+			}
+			else {
+				numOfWorkingUnits += tempNumOfWorkingInst;
+			}
 		}
 		else {
 			canRun = No;
@@ -137,11 +147,13 @@ int simulator(char** filesPaths) {
 		printf("\n");	
 	}
 
+	printUnitsToTraceInstFile(filesFd[TRACEINST]);
+
 	printMemoutFile(filesFd[MEMOUT], memory, MEMORY_LENGTH);
 	
 	printRegoutFile(filesFd[REGOUT], regs);
 
-	freeSolution(filesFd, line, cfg, 0, 0, instQueue);
+	freeSolution(filesFd, line, cfg, 0, functionalUnit, instQueue);
 	printf("End of Simulator!!!\n");
 	return 0;
 }
@@ -192,42 +204,44 @@ int issueInstructionToUnit(FunctionalUnit* fus, Instruction* instruction, int* r
 	if (fus->fu[type]->canInsert) {
 		for (int i = 0; i < fus->fu[type]->numOfTotalUnits; i++) {
 			if (fus->fu[type]->units[i]->isEmpty || !fus->fu[type]->units[i]) {
-				if (!fus->fu[type]->units[i]->busy && resultTypes[instruction->regDst] == -1 && instruction->fetchedTime != cc) {
-					fus->fu[type]->units[i]->busy = Yes;
-					fus->fu[type]->units[i]->instruction = instruction;
-					fus->fu[type]->units[i]->op = instruction->opcode;
+				if (!fus->fu[type]->units[i]->busy && instruction->fetchedTime != cc && instruction->stateCC[ISSUE] == -1) {
+					if ((resultTypes[instruction->regDst] == -1 && type != UNIT_ST )||( type == UNIT_ST)) {
+						fus->fu[type]->units[i]->busy = Yes;
+						fus->fu[type]->units[i]->instruction = instruction;
+						fus->fu[type]->units[i]->op = instruction->opcode;
 
-					fus->fu[type]->units[i]->f_i = instruction->regDst;
-					fus->fu[type]->units[i]->f_j = instruction->regSrc0;
-					fus->fu[type]->units[i]->f_k = instruction->regSrc1;
+						fus->fu[type]->units[i]->f_i = instruction->regDst;
+						fus->fu[type]->units[i]->f_j = instruction->regSrc0;
+						fus->fu[type]->units[i]->f_k = instruction->regSrc1;
 
-					fus->fu[type]->units[i]->q_j_index = resultIndexes[instruction->regSrc0];
-					fus->fu[type]->units[i]->q_k_index = resultIndexes[instruction->regSrc1];
+						fus->fu[type]->units[i]->q_j_index = resultIndexes[instruction->regSrc0];
+						fus->fu[type]->units[i]->q_k_index = resultIndexes[instruction->regSrc1];
 
-					fus->fu[type]->units[i]->q_j_type = resultTypes[instruction->regSrc0];
-					fus->fu[type]->units[i]->q_k_type = resultTypes[instruction->regSrc1];
+						fus->fu[type]->units[i]->q_j_type = resultTypes[instruction->regSrc0];
+						fus->fu[type]->units[i]->q_k_type = resultTypes[instruction->regSrc1];
 
-					fus->fu[type]->units[i]->r_j = (resultTypes[instruction->regSrc0] == -1) ? Yes : No;
-					fus->fu[type]->units[i]->r_k = (resultTypes[instruction->regSrc1] == -1) ? Yes : No;
+						fus->fu[type]->units[i]->r_j = (resultTypes[instruction->regSrc0] == -1) ? Yes : No;
+						fus->fu[type]->units[i]->r_k = (resultTypes[instruction->regSrc1] == -1) ? Yes : No;
 
-					fus->fu[type]->numOfActiveUnits++;
-					if (fus->fu[type]->numOfActiveUnits == fus->fu[type]->numOfTotalUnits) {
-						fus->fu[type]->canInsert = No;
+						fus->fu[type]->numOfActiveUnits++;
+						if (fus->fu[type]->numOfActiveUnits == fus->fu[type]->numOfTotalUnits) {
+							fus->fu[type]->canInsert = No;
+						}
+						fus->fu[type]->units[i]->isEmpty = No;
+
+						fus->fu[type]->units[i]->instruction->stateCC[ISSUE] = cc;
+
+						if (fus->fu[type]->units[i]->type != UNIT_ST) {
+							resultTypes[instruction->regDst] = fus->fu[type]->units[i]->type;
+							resultIndexes[instruction->regDst] = fus->fu[type]->units[i]->unitNum;
+						}
+
+						fus->fu[type]->units[i]->instruction->instIndex = i;
+
+						printUnit(fus->fu[type]->units[i]);
+						printf("ISSUE: %s%d at cc:%d\n", unitsTypeNames[type], i, cc);
+						return 1;
 					}
-					fus->fu[type]->units[i]->isEmpty = No;
-
-					fus->fu[type]->units[i]->instruction->stateCC[ISSUE] = cc;
-
-					if (fus->fu[type]->units[i]->type != UNIT_ST) {
-						resultTypes[instruction->regDst] = fus->fu[type]->units[i]->type;
-						resultIndexes[instruction->regDst] = fus->fu[type]->units[i]->unitNum;
-					}
-
-					fus->fu[type]->units[i]->instruction->instIndex = i;
-
-					printUnit(fus->fu[type]->units[i]);
-					printf("ISSUE: %s%d at cc:%d\n", unitsTypeNames[type], i, cc);
-					return 1;
 				}
 			}
 		}
@@ -248,7 +262,12 @@ void readOperand(FunctionalUnit* fu, double* regs, int cc){
 							fu->fu[i]->units[j]->r_j = No;
 							fu->fu[i]->units[j]->r_k = No;
 							fu->fu[i]->units[j]->instruction->stateCC[READ_OPERAND] = cc;
-							fu->fu[i]->units[j]->instruction->executionTime = cc + fu->fu[i]->delay - 1;
+							if (fu->fu[i]->delay == 1) {
+								fu->fu[i]->units[j]->instruction->executionTime = cc + fu->fu[i]->delay;
+							}
+							else {
+								fu->fu[i]->units[j]->instruction->executionTime = cc + fu->fu[i]->delay - 1;
+							}
 							printf("READ_OPERAND: %s%d at cc:%d\n", opcodeNames[i], j, cc);
 						}
 					}

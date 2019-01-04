@@ -7,6 +7,7 @@ Instruction* createInstruction() {
 	}
 	src->isEmpty = Yes;
 	src->writeToFile = No;
+	src->canIssue = Yes;
 	for (int i = 0; i < NUM_OF_CYCLES_TYPES; i++) {
 		src->stateCC[i] = -1;
 	}
@@ -29,6 +30,7 @@ void freeInstruction(Instruction* src) {
 
 void parseInstruction(Instruction* src, int cmdLine) {
 	unsigned int temp = cmdLine;
+	src->line = temp;
 	temp <<= 4;
 	src->opcode = 0xFFFFFFF & (temp >> 28);
 	temp <<= 4;

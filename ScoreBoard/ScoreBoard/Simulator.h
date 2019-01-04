@@ -4,6 +4,7 @@
 #include "Utils.h"
 
 
+
 static int numOfWorkingUnits = 0;
 
 /*Simulator function, execute all simulator steps.*/
@@ -34,3 +35,4 @@ void checkIfLdAndStCollide(FunctionalUnit* fu, Instruction* stInst, int cc);
 
 /*Free all the data that has been allocated for exit solution properly.*/
 void freeSolution(FILE** fds, char* line, Config* cfg, Instruction* cmd, FunctionalUnit* fus, InstructionQueue* queue);
+

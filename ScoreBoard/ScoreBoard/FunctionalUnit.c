@@ -73,7 +73,10 @@ void freeUnits(Units* src) {
 		return;
 	}
 	for (int i = 0; i < MAX_NUM_OF_FUNCTIONAL_UNITS; i++) {
-		freeUnit(src->units[i]);
+		if (src->numOfActiveUnits != 0) {
+			freeUnit(src->units[i]);
+			src->numOfActiveUnits--;
+		}
 	}
 	free(src);
 }

@@ -1,0 +1,11 @@
+5 MUL0 F7 F4 F1 - - Yes Yes
+6 MUL0 F7 F4 F1 - - No No
+7 MUL0 F7 F4 F1 - - No No
+8 MUL0 F7 F4 F1 - - No No
+9 MUL0 F7 F4 F1 - - No No
+10 MUL0 F7 F4 F1 - - No No
+11 MUL0 F7 F4 F1 - - No No
+12 MUL0 F7 F4 F1 - - No No
+13 MUL0 F7 F4 F1 - - No No
+14 MUL0 F7 F4 F1 - - No No
+15 MUL0 F7 F4 F1 - - No No

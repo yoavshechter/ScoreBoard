@@ -9,6 +9,7 @@ typedef struct instructionCommand {
 	unsigned int regSrc0;
 	unsigned int regSrc1;
 	unsigned int immidiate;
+	unsigned int line;
 	
 	int instType;
 	int instIndex;
@@ -17,6 +18,7 @@ typedef struct instructionCommand {
 	int fetchedTime;
 	int queueIndex;
 	int writeToFile;
+	int canIssue;
 
 	int executionTime;
 	int stateCC[NUM_OF_CYCLES_TYPES];
